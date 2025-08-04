@@ -61,4 +61,8 @@ app.use("/api/user", userRoutes);
 
 app.use("/api/common/feature", commonFeatureRouter);
 
+app.get("/", (req, res) => {
+  res.status(200).send("Welcome to Backend 🖐");
+});
+
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
