@@ -29,7 +29,10 @@ const PORT = process.env.PORT || 4000;
 
 app.use(
   cors({
-    origin: "https://ecommercewebservice.netlify.app",
+    origin: [
+      "http://loaclhost:5173",
+      "https://ecommercewebservice.netlify.app",
+    ],
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
       "Content-Type",
