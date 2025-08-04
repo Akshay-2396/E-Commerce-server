@@ -136,7 +136,7 @@ const forgotPassword = async (req, res) => {
       user.email,
       "Password Reset Link",
       `You requested a password reset. Click the link below to reset your password:\n\n` +
-        `https://ecommercewebservice.netlify.app//${user._id}/${token}\n\n` +
+        `https://ecommercewebservice.netlify.app/${user._id}/${token}\n\n` +
         `If you did not request this, please ignore the email.`
     );
 
