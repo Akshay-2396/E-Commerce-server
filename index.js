@@ -25,12 +25,13 @@ mongoose
 
 require("dotenv").config();
 const app = express();
+
 const PORT = process.env.PORT || 4000;
 
 app.use(
   cors({
     origin: [
-      "http://loaclhost:5173",
+      "http://localhost:5173",
       "https://ecommercewebservice.netlify.app",
     ],
     methods: ["GET", "POST", "DELETE", "PUT"],
