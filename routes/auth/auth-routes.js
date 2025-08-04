@@ -14,8 +14,8 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 
-router.post("/forgot-password", forgotPassword); // ✅ PUBLIC
-router.post("/reset-password/:id/:token", resetPassword); // ✅ PUBLIC
+router.post("/forgot-password", forgotPassword); 
+router.post("/reset-password/:id/:token", resetPassword); 
 
 router.get("/check-auth", authMiddleware, (req, res) => {
   const user = req.user;
