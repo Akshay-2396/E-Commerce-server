@@ -2,16 +2,17 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const Product = require("../models/Product");
-const auth = require("../middleware/auth");
+// const auth = require("../middleware/auth");
+const {authMiddleware} = require("../controllers/auth/auth-controller")
 
 // Get all wishlist items for logged-in user
-router.get("/", auth, async (req, res) => {
+router.get("/",authMiddleware, async (req, res) => {
   const user = await User.findById(req.user.id).populate("wishlist");
   res.json(user.wishlist);
 });
 
 // Add a product to wishlist
-router.post("/", auth, async (req, res) => {
+router.post("/",authMiddleware ,async (req, res) => {
   const user = await User.findById(req.user.id);
   const { _id } = req.body;
 
@@ -24,7 +25,7 @@ router.post("/", auth, async (req, res) => {
 });
 
 // Remove a product from wishlist
-router.delete("/:id", auth, async (req, res) => {
+router.delete("/:id",authMiddleware, async (req, res) => {
   const user = await User.findById(req.user.id);
   user.wishlist = user.wishlist.filter(
     (prodId) => prodId.toString() !== req.params.id

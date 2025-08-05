@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/auth");
+// const auth = require("../middleware/auth");
 const User = require("../models/User");
-
+const {authMiddleware} = require("../controllers/auth/auth-controller")
 // Get profile
-router.get("/profile", auth, async (req, res) => {
+router.get("/profile",authMiddleware, async (req, res) => {
   const user = await User.findById(req.user.id).select("-password");
   res.json(user);
 });
 
 // Update profile
-router.put("/profile", auth, async (req, res) => {
+router.put("/profile",authMiddleware, async (req, res) => {
   const { userName, email, phone, address } = req.body;
 
   const updated = await User.findByIdAndUpdate(
