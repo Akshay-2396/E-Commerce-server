@@ -36,55 +36,105 @@ const registerUser = async (req, res) => {
   }
 };
 
-// LOGIN
+// // LOGIN
+// const loginUser = async (req, res) => {
+//   const { email, password } = req.body;
+
+//   try {
+//     const checkUser = await User.findOne({ email });
+//     if (!checkUser)
+//       return res.json({
+//         success: false,
+//         message: "User doesn't exist! Please register first",
+//       });
+
+//     const checkPasswordMatch = await bcrypt.compare(
+//       password,
+//       checkUser.password
+//     );
+//     if (!checkPasswordMatch)
+//       return res.json({
+//         success: false,
+//         message: "Incorrect password! Please try again",
+//       });
+
+//     const token = jwt.sign(
+//       {
+//         id: checkUser._id,
+//         role: checkUser.role,
+//         email: checkUser.email,
+//         userName: checkUser.userName,
+//       },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "60m" }
+//     );
+
+//     res.cookie("token", token, { httpOnly: true, secure: false }).json({
+//       success: true,
+//       message: "Logged in successfully",
+//       user: {
+//         email: checkUser.email,
+//         role: checkUser.role,
+//         id: checkUser._id,
+//         userName: checkUser.userName,
+//       },
+//     });
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({
+//       success: false,
+//       message: "Some error occurred",
+//     });
+//   }
+// };
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const checkUser = await User.findOne({ email });
-    if (!checkUser)
+    const user = await User.findOne({ email });
+    if (!user)
       return res.json({
         success: false,
-        message: "User doesn't exist! Please register first",
+        message: "User not found. Please register first.",
       });
 
-    const checkPasswordMatch = await bcrypt.compare(
-      password,
-      checkUser.password
-    );
-    if (!checkPasswordMatch)
-      return res.json({
-        success: false,
-        message: "Incorrect password! Please try again",
-      });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.json({ success: false, message: "Incorrect password" });
 
     const token = jwt.sign(
       {
-        id: checkUser._id,
-        role: checkUser.role,
-        email: checkUser.email,
-        userName: checkUser.userName,
+        id: user._id,
+        role: user.role,
+        email: user.email,
+        userName: user.userName,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "60m" }
+      { expiresIn: "1d" }
     );
 
-    res.cookie("token", token, { httpOnly: true, secure: false }).json({
+    // ✅ Secure cookie setup
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
       success: true,
       message: "Logged in successfully",
       user: {
-        email: checkUser.email,
-        role: checkUser.role,
-        id: checkUser._id,
-        userName: checkUser.userName,
+        email: user.email,
+        role: user.role,
+        id: user._id,
+        userName: user.userName,
       },
     });
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({
-      success: false,
-      message: "Some error occurred",
-    });
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -99,6 +149,9 @@ const logoutUser = (req, res) => {
 // AUTH MIDDLEWARE
 const authMiddleware = async (req, res, next) => {
   const token = req.cookies.token;
+console.log("incoming cookie token:",token);
+
+
   if (!token)
     return res.status(401).json({
       success: false,
