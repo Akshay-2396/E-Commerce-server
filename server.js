@@ -1,3 +1,6 @@
+
+
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
@@ -23,7 +26,6 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.log(error));
 
-require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
