@@ -36,59 +36,14 @@ router.delete("/:id",authMiddleware, async (req, res) => {
 
 module.exports = router;
 
-
-
 // const express = require("express");
+// const { getWishlist, addToWishlist, removeFromWishlist } = require("../controllers/shop/wishlist-controller");
+// const authMiddleware = require("../controllers/auth/auth-controller").authMiddleware;
+
 // const router = express.Router();
-// const authMiddleware = require("../middleware/auth");
-// const Wishlist = require("../models/Wishlist"); // Or wherever you manage it
 
-// // GET wishlist
-// router.get("/", authMiddleware, async (req, res) => {
-//   try {
-//     const userId = req.user._id;
-//     const wishlist = await Wishlist.findOne({ user: userId }).populate("products");
-//     res.json(wishlist);
-//   } catch (err) {
-//     console.error("Wishlist fetch error:", err);
-//     res.status(500).json({ msg: "Server error" });
-//   }
-// });
-
-// // ADD to wishlist
-// router.post("/", authMiddleware, async (req, res) => {
-//   try {
-//     const userId = req.user._id;
-//     const { _id: productId } = req.body;
-
-//     let wishlist = await Wishlist.findOne({ user: userId });
-//     if (!wishlist) {
-//       wishlist = new Wishlist({ user: userId, products: [productId] });
-//     } else if (!wishlist.products.includes(productId)) {
-//       wishlist.products.push(productId);
-//     }
-
-//     await wishlist.save();
-//     res.json({ wishlist });
-//   } catch (err) {
-//     console.error("Add to wishlist error:", err);
-//     res.status(500).json({ msg: "Server error" });
-//   }
-// });
-
-// // DELETE from wishlist
-// router.delete("/:productId", authMiddleware, async (req, res) => {
-//   try {
-//     const userId = req.user._id;
-//     const productId = req.params.productId;
-
-//     await Wishlist.updateOne({ user: userId }, { $pull: { products: productId } });
-
-//     res.json({ msg: "Removed from wishlist" });
-//   } catch (err) {
-//     console.error("Remove from wishlist error:", err);
-//     res.status(500).json({ msg: "Server error" });
-//   }
-// });
+// router.get("/", authMiddleware, getWishlist);
+// router.post("/", authMiddleware, addToWishlist);
+// router.delete("/:id", authMiddleware, removeFromWishlist);
 
 // module.exports = router;
