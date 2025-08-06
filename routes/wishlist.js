@@ -35,15 +35,3 @@ router.delete("/:id",authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
-
-// const express = require("express");
-// const { getWishlist, addToWishlist, removeFromWishlist } = require("../controllers/shop/wishlist-controller");
-// const authMiddleware = require("../controllers/auth/auth-controller").authMiddleware;
-
-// const router = express.Router();
-
-// router.get("/", authMiddleware, getWishlist);
-// router.post("/", authMiddleware, addToWishlist);
-// router.delete("/:id", authMiddleware, removeFromWishlist);
-
-// module.exports = router;
