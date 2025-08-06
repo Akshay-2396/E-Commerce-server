@@ -153,7 +153,7 @@ const forgotPassword = async (req, res) => {
       expiresIn: "1h",
     });
 
-    const resetLink = `http://localhost:5173/reset-password/${user._id}/${token}`;
+    const resetLink = `https://ecommercewebservices.netlify.app/reset-password/${user._id}/${token}`;
 
     await sendEmail(user.email, "Password Reset", `Click here to reset: ${resetLink}`);
 
