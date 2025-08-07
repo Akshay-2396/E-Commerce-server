@@ -22,7 +22,7 @@ const userRoutes = require("./routes/userRoutes");
 const wishlistRoutes = require("./routes/wishlist");
 
 mongoose
-  .connect("mongodb+srv://Akshay:Akshay123@cluster1.xb0vxyw.mongodb.net/Ecom")
+  .connect(process.env.MONGODB_URL)
   .then(() => console.log("MongoDB connected "))
   .catch((error) => console.log(error));
 

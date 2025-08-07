@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const Product = require("../models/Product");
-// const auth = require("../middleware/auth");
+
 const {authMiddleware} = require("../controllers/auth/auth-controller")
 
 // Get all wishlist items for logged-in user
