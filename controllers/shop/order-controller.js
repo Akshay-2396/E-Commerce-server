@@ -73,10 +73,7 @@ const createOrder = async (req, res) => {
       payer: {
         payment_method: "paypal",
       },
-       application_context: {
-        landing_page: "BILLING", // Directly show card form
-        user_action: "PAY_NOW", // Show "Pay Now" button
-      },
+    
       redirect_urls: {
         return_url: "https://ecommercewebservices.netlify.app/shop/paypal-return",
         cancel_url: "https://ecommercewebservices.netlify.app/shop/paypal-cancel",
