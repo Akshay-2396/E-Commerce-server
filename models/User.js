@@ -4,7 +4,7 @@ const UserSchema = new mongoose.Schema({
   userName: {
     type: String,
     required: true,
-
+    unique: true,
   },
   email: {
     type: String,
@@ -17,19 +17,16 @@ const UserSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-  
   },
   address: {
     type: String,
-   
   },
   role: {
     type: String,
     default: "user",
   },
-  
-wishlist:[{type:mongoose.Schema.Types.ObjectId,ref:"Product"}],
 
+  wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
 });
 
 const User = mongoose.model("User", UserSchema);
