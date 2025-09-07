@@ -1,10 +1,30 @@
 const Order = require("../../models/Order");
+const Product = require("../../models/Product");
 
 const getAllOrdersOfAllUsers = async (req, res) => {
   try {
+    const adminid = req.query.adminid;
+    const products = await Product.find({ adminid });
+    const productIds = products.map((p) => p._id.toString());
     const orders = await Order.find({});
 
-    if (!orders.length) {
+    const fillteredOrder = orders.filter(
+      (order) =>
+        order.cartItems.filter((item) => productIds.includes(item.productId))
+          ?.length > 0
+    );
+
+    fillteredOrder.forEach((order) => {
+      console.log(
+        order.cartItems.filter((item) => productIds.includes(item.productId))
+      );
+
+      order.cartItems = order.cartItems.filter((item) =>
+        productIds.includes(item.productId)
+      );
+    });
+
+    if (!fillteredOrder.length) {
       return res.status(404).json({
         success: false,
         message: "No orders found!",
@@ -13,7 +33,7 @@ const getAllOrdersOfAllUsers = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: orders,
+      data: fillteredOrder,
     });
   } catch (e) {
     console.log(e);
@@ -26,8 +46,10 @@ const getAllOrdersOfAllUsers = async (req, res) => {
 
 const getOrderDetailsForAdmin = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id, adminid } = req.params;
 
+    const products = await Product.find({ adminid });
+    const productIds = products.map((p) => p._id.toString());
     const order = await Order.findById(id);
 
     if (!order) {
@@ -36,6 +58,9 @@ const getOrderDetailsForAdmin = async (req, res) => {
         message: "Order not found!",
       });
     }
+    order.cartItems = order.cartItems.filter((item) =>
+      productIds.includes(item.productId)
+    );
 
     res.status(200).json({
       success: true,

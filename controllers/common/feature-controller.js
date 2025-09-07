@@ -3,7 +3,7 @@ const Feature = require("../../models/Feature"); // Your Mongoose model
 // ✅ Add image
 const addFeatureImage = async (req, res) => {
   try {
-    const { image } = req.body;
+    const { image, adminid } = req.body;
     console.log("Image received:", image);
 
     if (!image) {
@@ -13,7 +13,7 @@ const addFeatureImage = async (req, res) => {
       });
     }
 
-    const saved = await Feature.create({ image }); // FIXED THIS LINE
+    const saved = await Feature.create({ image, adminid }); // FIXED THIS LINE
 
     if (saved) {
       return res.status(201).json({ success: true, data: saved });
@@ -33,7 +33,10 @@ const addFeatureImage = async (req, res) => {
 // ✅ Get all images
 const getFeatureImages = async (req, res) => {
   try {
-    const images = await Feature.find();
+    const adminid = req.query.adminid;
+    const role = req.query.role;
+    const payload = role === "admin" ? { adminid } : {};
+    const images = await Feature.find(payload);
     res.status(200).json({ success: true, data: images });
   } catch (error) {
     res.status(500).json({ success: false, message: "Internal Server Error" });

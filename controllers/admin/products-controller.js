@@ -33,6 +33,7 @@ const addProduct = async (req, res) => {
       salePrice,
       totalStock,
       averageReview,
+      adminid,
     } = req.body;
 
     console.log(averageReview, "averageReview");
@@ -47,6 +48,7 @@ const addProduct = async (req, res) => {
       salePrice,
       totalStock,
       averageReview,
+      adminid,
     });
 
     await newlyCreatedProduct.save();
@@ -67,7 +69,8 @@ const addProduct = async (req, res) => {
 
 const fetchAllProducts = async (req, res) => {
   try {
-    const listOfProducts = await Product.find({});
+    const adminid = req.query.adminid
+    const listOfProducts = await Product.find({adminid});
     res.status(200).json({
       success: true,
       data: listOfProducts,
@@ -95,6 +98,7 @@ const editProduct = async (req, res) => {
       salePrice,
       totalStock,
       averageReview,
+     
     } = req.body;
 
     let findProduct = await Product.findById(id);
@@ -161,3 +165,4 @@ module.exports = {
   editProduct,
   deleteProduct,
 };
+

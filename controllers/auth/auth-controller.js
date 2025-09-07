@@ -23,7 +23,7 @@ const generateToken = (user) => {
  * REGISTER USER
  */
 const registerUser = async (req, res) => {
-  const { userName, email, password } = req.body;
+  const { userName, email, password, role } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -35,13 +35,26 @@ const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = new User({ userName, email, password: hashedPassword });
+
+    // ✅ use provided role, fallback to "user"
+    const newUser = new User({
+      userName,
+      email,
+      password: hashedPassword,
+      role: role || "user",
+    });
 
     await newUser.save();
 
     res.status(201).json({
       success: true,
       message: "Registration successful",
+      user: {
+        id: newUser._id,
+        userName: newUser.userName,
+        email: newUser.email,
+        role: newUser.role,
+      },
     });
   } catch (error) {
     console.error("Register Error:", error);
@@ -68,24 +81,25 @@ const loginUser = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.status(401).json({ success: false, message: "Incorrect password" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Incorrect password" });
 
-    //  Generate token
+    // Generate token
     const token = generateToken(user);
 
-    //  Set token in cookie
+    // Set token in cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", 
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
-    
     res.status(200).json({
       success: true,
       message: "Logged in successfully",
-      token, 
+      token,
       user: {
         id: user._id,
         email: user.email,
@@ -115,8 +129,6 @@ const logoutUser = (req, res) => {
 /**
  * AUTH MIDDLEWARE
  */
-
-
 const authMiddleware = (req, res, next) => {
   const authHeader = req.header("Authorization");
 
@@ -131,7 +143,7 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; 
+    req.user = decoded;
     next();
   } catch (error) {
     console.error("Auth Middleware Error:", error);
@@ -150,7 +162,9 @@ const forgotPassword = async (req, res) => {
     const { email } = req.body;
     const user = await User.findOne({ email });
     if (!user)
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
 
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
@@ -158,9 +172,15 @@ const forgotPassword = async (req, res) => {
 
     const resetLink = `https://ecommercewebservices.netlify.app/reset-password/${user._id}/${token}`;
 
-    await sendEmail(user.email, "Password Reset", `Click here to reset: ${resetLink}`);
+    await sendEmail(
+      user.email,
+      "Password Reset",
+      `Click here to reset: ${resetLink}`
+    );
 
-    res.status(200).json({ success: true, message: "Password reset email sent" });
+    res
+      .status(200)
+      .json({ success: true, message: "Password reset email sent" });
   } catch (error) {
     console.error("Forgot Password Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -186,9 +206,13 @@ const resetPassword = async (req, res) => {
     );
 
     if (!updatedUser)
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
 
-    res.status(200).json({ success: true, message: "Password reset successful" });
+    res
+      .status(200)
+      .json({ success: true, message: "Password reset successful" });
   } catch (error) {
     console.error("Reset Password Error:", error);
     res.status(500).json({ success: false, message: "Server error" });

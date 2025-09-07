@@ -1,5 +1,3 @@
-
-
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -31,9 +29,11 @@ const PORT = process.env.PORT || 4000;
 
 app.use(
   cors({
-    origin: ["http://localhost:5173",
-      "https://ecommercewebservices.netlify.app"],
-    
+    origin: [
+      "http://localhost:5173",
+      "https://ecommercewebservices.netlify.app",
+    ],
+
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
       "Content-Type",
@@ -46,7 +46,7 @@ app.use(
   })
 );
 
-app.options("*",cors());
+app.options("*", cors());
 
 app.use(cookieParser());
 app.use(express.json());
