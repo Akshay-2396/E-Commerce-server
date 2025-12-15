@@ -235,5 +235,3 @@ module.exports = {
   deleteCartItem,
   fetchCartItems,
 };
-
-
