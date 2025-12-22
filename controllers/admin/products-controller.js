@@ -1,26 +1,8 @@
-
 const Product = require("../../models/Product");
 
-const handleImageUpload = async (req, res) => {
-  try {
-    const b64 = Buffer.from(req.file.buffer).toString("base64");
-    const url = "data:" + req.file.mimetype + ";base64," + b64;
-    const result = await imageUploadUtil(url);
-
-    res.json({
-      success: true,
-      result,
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({
-      success: false,
-      message: "Error occured",
-    });
-  }
-};
-
-//add a new product
+// =======================
+// ADD NEW PRODUCT
+// =======================
 const addProduct = async (req, res) => {
   try {
     const {
@@ -36,58 +18,63 @@ const addProduct = async (req, res) => {
       adminid,
     } = req.body;
 
-    console.log(averageReview, "averageReview");
-
     const newlyCreatedProduct = new Product({
       image,
       title,
       description,
       category,
       brand,
-      price,
-      salePrice,
+      price: price === "" ? 0 : price,
+      salePrice: salePrice === "" ? 0 : salePrice,
       totalStock,
       averageReview,
       adminid,
     });
 
     await newlyCreatedProduct.save();
+
     res.status(201).json({
       success: true,
       data: newlyCreatedProduct,
     });
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.error("Add product error:", error);
     res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred while adding product",
     });
   }
 };
 
-//fetch all products
-
+// =======================
+// FETCH ALL PRODUCTS (ADMIN)
+// =======================
 const fetchAllProducts = async (req, res) => {
   try {
-    const adminid = req.query.adminid
-    const listOfProducts = await Product.find({adminid});
+    const adminid = req.query.adminid;
+
+    const listOfProducts = await Product.find({ adminid });
+
     res.status(200).json({
       success: true,
       data: listOfProducts,
     });
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.error("Fetch products error:", error);
     res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred while fetching products",
     });
   }
 };
 
-//edit a product
+// =======================
+// EDIT PRODUCT
+// =======================
 const editProduct = async (req, res) => {
   try {
     const { id } = req.params;
+
     const {
       image,
       title,
@@ -98,71 +85,77 @@ const editProduct = async (req, res) => {
       salePrice,
       totalStock,
       averageReview,
-     
     } = req.body;
 
-    let findProduct = await Product.findById(id);
-    if (!findProduct)
+    const product = await Product.findById(id);
+
+    if (!product) {
       return res.status(404).json({
         success: false,
         message: "Product not found",
       });
+    }
 
-    findProduct.title = title || findProduct.title;
-    findProduct.description = description || findProduct.description;
-    findProduct.category = category || findProduct.category;
-    findProduct.brand = brand || findProduct.brand;
-    findProduct.price = price === "" ? 0 : price || findProduct.price;
-    findProduct.salePrice =
-      salePrice === "" ? 0 : salePrice || findProduct.salePrice;
-    findProduct.totalStock = totalStock || findProduct.totalStock;
-    findProduct.image = image || findProduct.image;
-    findProduct.averageReview = averageReview || findProduct.averageReview;
+    // Update fields safely
+    product.title = title ?? product.title;
+    product.description = description ?? product.description;
+    product.category = category ?? product.category;
+    product.brand = brand ?? product.brand;
+    product.price = price === "" ? product.price : price ?? product.price;
+    product.salePrice =
+      salePrice === "" ? product.salePrice : salePrice ?? product.salePrice;
+    product.totalStock = totalStock ?? product.totalStock;
+    product.image = image ?? product.image;
+    product.averageReview =
+      averageReview ?? product.averageReview;
 
-    await findProduct.save();
+    await product.save();
+
     res.status(200).json({
       success: true,
-      data: findProduct,
+      data: product,
     });
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.error("Edit product error:", error);
     res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred while editing product",
     });
   }
 };
 
-//delete a product
+// =======================
+// DELETE PRODUCT
+// =======================
 const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findByIdAndDelete(id);
 
-    if (!product)
+    const deletedProduct = await Product.findByIdAndDelete(id);
+
+    if (!deletedProduct) {
       return res.status(404).json({
         success: false,
         message: "Product not found",
       });
+    }
 
     res.status(200).json({
       success: true,
-      message: "Product delete successfully",
+      message: "Product deleted successfully",
     });
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.error("Delete product error:", error);
     res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred while deleting product",
     });
   }
 };
 
 module.exports = {
-  handleImageUpload,
   addProduct,
   fetchAllProducts,
   editProduct,
   deleteProduct,
 };
-
